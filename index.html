@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home</title>
+<style>
+  :root {
+    --bg: #faf9f5;
+    --surface: #ffffff;
+    --surface-2: #f0eee6;
+    --ink: #3d3929;
+    --ink-soft: #83827c;
+    --line: rgba(61, 57, 41, 0.12);
+    --accent: #d97757;
+    --accent-strong: #c15f3c;
+    --accent-soft: rgba(217, 119, 87, 0.1);
+    --on-accent: #ffffff;
+    --shadow: 0 1px 2px rgba(61, 57, 41, 0.04), 0 8px 24px rgba(61, 57, 41, 0.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #262624;
+    --surface: #30302e;
+    --surface-2: #3a3a37;
+    --ink: #ececea;
+    --ink-soft: #a3a29c;
+    --line: rgba(236, 236, 234, 0.1);
+    --accent: #d97757;
+    --accent-strong: #e08a6c;
+    --accent-soft: rgba(217, 119, 87, 0.14);
+    --on-accent: #ffffff;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 9vh 24px 64px;
+  }
+
+  /* ---------- Header: greeting + clock ---------- */
+  header { text-align: center; margin-bottom: 40px; }
+
+  .date {
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+
+  .greeting {
+    font-family: ui-serif, "New York", Georgia, serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .clock {
+    font-family: ui-serif, "New York", Georgia, serif;
+    font-size: clamp(3.4rem, 11vw, 5.2rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .clock .sec {
+    font-size: 0.32em;
+    color: var(--ink-soft);
+    margin-left: 0.3em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .corner-btn {
+    position: fixed;
+    right: 20px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .corner-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .corner-btn.left { left: 20px; right: auto; }
+  .theme-btn { top: 20px; }
+  .history-btn { top: 68px; }
+  .google-btn { top: 116px; }
+
+  .ai-btn img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  /* ---------- Google apps dropdown ---------- */
+  .google-menu {
+    position: fixed;
+    top: 162px;
+    right: 20px;
+    width: 264px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    z-index: 20;
+  }
+  .google-menu[hidden] { display: none; }
+  .google-menu a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 4px 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .google-menu a:hover { background: var(--accent-soft); }
+  .google-menu img { width: 26px; height: 26px; object-fit: contain; }
+  .google-menu .label {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .google-menu a:hover .label { color: var(--ink); }
+
+  /* ---------- Search ---------- */
+  .search-wrap { position: relative; margin-bottom: 48px; }
+
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+  }
+  .search:focus-within { border-color: var(--accent); }
+  .search svg { flex: none; color: var(--ink-soft); }
+  .search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1.05rem;
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .search input::placeholder { color: var(--ink-soft); }
+
+  .suggestions {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    list-style: none;
+    overflow: hidden;
+    z-index: 10;
+  }
+  .suggestions[hidden] { display: none; }
+  .suggestions li {
+    padding: 11px 18px;
+    font-size: 0.95rem;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .suggestions li + li { border-top: 1px solid var(--line); }
+  .suggestions li.active,
+  .suggestions li:hover {
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+  }
+
+  /* ---------- Section chrome ---------- */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .section-head h2 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .section-head button {
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 0.82rem;
+    color: var(--accent-strong);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 6px;
+  }
+  .section-head button:hover { background: var(--accent-soft); }
+
+  /* ---------- Shortcuts ---------- */
+  .links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 14px;
+    margin-bottom: 52px;
+  }
+
+  .tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    padding: 16px 8px 13px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: var(--accent);
+  }
+
+  .tile .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .tile .icon img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+  }
+  .tile .icon.mono {
+    font-family: ui-serif, "New York", Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+  }
+  .tile .name {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tile:hover .name { color: var(--ink); }
+
+  .tile .del {
+    display: none;
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 22px;
+    height: 22px;
+    border: none;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .links.editing .tile .del { display: block; }
+  .links.editing .tile { cursor: grab; }
+  .tile.dragging { opacity: 0.35; }
+  .tile.drag-over {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 2px var(--accent-soft);
+  }
+
+  .tile.add-tile {
+    border-style: dashed;
+    color: var(--ink-soft);
+    justify-content: center;
+    min-height: 104px;
+    font-size: 1.6rem;
+    font-weight: 300;
+    cursor: pointer;
+    background: transparent;
+    font-family: inherit;
+  }
+  .tile.add-tile:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ---------- To-dos ---------- */
+  .todo-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 6px 18px 10px;
+  }
+  .todo-input {
+    display: flex;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .todo-input input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.95rem;
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .todo-input input::placeholder { color: var(--ink-soft); }
+
+  #todoList { list-style: none; }
+  #todoList li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+  }
+  #todoList li:last-child { border-bottom: none; }
+  #todoList input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex: none;
+  }
+  #todoList .txt { flex: 1; word-break: break-all; }
+  #todoList li.done .txt {
+    color: var(--ink-soft);
+    text-decoration: line-through;
+  }
+  #todoList .rm {
+    border: none;
+    background: none;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+    padding: 2px 6px;
+  }
+  #todoList li:hover .rm, #todoList .rm:focus-visible { opacity: 1; }
+  #todoList .rm:hover { color: var(--accent-strong); }
+
+  .todo-empty {
+    padding: 14px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  /* ---------- Add-shortcut dialog ---------- */
+  dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    color: var(--ink);
+    padding: 26px;
+    width: min(92vw, 380px);
+    box-shadow: var(--shadow);
+  }
+  dialog::backdrop { background: rgba(38, 38, 36, 0.4); }
+  dialog h3 {
+    font-family: ui-serif, "New York", Georgia, serif;
+    font-size: 1.15rem;
+    margin-bottom: 18px;
+  }
+  dialog label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+  }
+  dialog input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+  }
+  dialog input:focus { border-color: var(--accent); }
+  .dialog-btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .dialog-btns button {
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+  }
+  .dialog-btns .primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+  .dialog-btns .primary:hover { background: var(--accent-strong); }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+  <button class="corner-btn theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+  <button class="corner-btn history-btn" id="historyBtn" title="View history" aria-label="View history">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/>
+    </svg>
+  </button>
+  <button class="corner-btn google-btn" id="googleBtn" title="Google apps" aria-label="Google apps"
+    aria-haspopup="true" aria-expanded="false" aria-controls="googleMenu">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="4" cy="4" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="20" cy="4" r="2"/>
+      <circle cx="4" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="20" cy="12" r="2"/>
+      <circle cx="4" cy="20" r="2"/><circle cx="12" cy="20" r="2"/><circle cx="20" cy="20" r="2"/>
+    </svg>
+  </button>
+  <nav class="google-menu" id="googleMenu" aria-label="Google services" hidden></nav>
+
+  <div class="wrap">
+    <header>
+      <p class="date" id="date"></p>
+      <p class="greeting" id="greeting"></p>
+      <p class="clock"><span id="time"></span><span class="sec" id="sec"></span></p>
+    </header>
+
+    <div class="search-wrap">
+      <form class="search" id="searchForm" role="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search or enter address" autocomplete="off" autofocus
+          role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions">
+      </form>
+      <ul class="suggestions" id="suggestions" role="listbox" hidden></ul>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <h2>Shortcuts</h2>
+        <button id="editBtn" type="button">Edit</button>
+      </div>
+      <div class="links" id="links"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>To-dos</h2>
+        <button id="clearDoneBtn" type="button">Clear completed</button>
+      </div>
+      <div class="todo-box">
+        <form class="todo-input" id="todoForm">
+          <input type="text" id="todoInput" placeholder="Add a task and press Enter" autocomplete="off">
+        </form>
+        <ul id="todoList"></ul>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="linkDialog">
+    <h3 id="linkDialogTitle">Add shortcut</h3>
+    <form method="dialog" id="linkForm">
+      <label for="linkName">Name</label>
+      <input type="text" id="linkName" placeholder="e.g. GitHub" required>
+      <label for="linkUrl">Address</label>
+      <input type="text" id="linkUrl" placeholder="e.g. github.com" required inputmode="url">
+      <div class="dialog-btns">
+        <button type="button" id="linkCancel">Cancel</button>
+        <button type="submit" class="primary" id="linkSubmitBtn" value="ok">Add</button>
+      </div>
+    </form>
+  </dialog>
+
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function load(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      return raw === null ? fallback : JSON.parse(raw);
+    } catch (e) { return fallback; }
+  }
+  function save(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+  }
+
+  /* ---------- Theme ---------- */
+  var theme = load("hp.theme", null); // null = follow system
+  function applyTheme() {
+    var dark = theme === "dark" ||
+      (theme === null && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  }
+  applyTheme();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+  $("themeBtn").addEventListener("click", function () {
+    var dark = document.documentElement.dataset.theme === "dark";
+    theme = dark ? "light" : "dark";
+    save("hp.theme", theme);
+    applyTheme();
+  });
+
+  /* ---------- Clock, date, greeting ---------- */
+  var greetings = [
+    [5,  "Quiet hours — still up?"],
+    [12, "Good morning"],
+    [18, "Good afternoon"],
+    [22, "Good evening"],
+    [24, "Wind down well"]
+  ];
+  function pick(table, hour) {
+    for (var i = 0; i < table.length; i++) {
+      if (hour < table[i][0]) return table[i][1];
+    }
+    return table[0][1];
+  }
+
+  function tick() {
+    var now = new Date();
+    var pad = function (n) { return String(n).padStart(2, "0"); };
+
+    $("time").textContent = pad(now.getHours()) + ":" + pad(now.getMinutes());
+    $("sec").textContent = pad(now.getSeconds());
+    $("date").textContent = now.toLocaleDateString("en-US", {
+      month: "long", day: "numeric", weekday: "long"
+    });
+    $("greeting").textContent = pick(greetings, now.getHours());
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* ---------- History ---------- */
+  var HISTORY_LIMIT = 50;
+  function recordHistory(name, url) {
+    var history = load("hp.history", []);
+    history.unshift({ name: name, url: url, time: Date.now() });
+    if (history.length > HISTORY_LIMIT) history.length = HISTORY_LIMIT;
+    save("hp.history", history);
+  }
+  $("historyBtn").addEventListener("click", function () {
+    location.href = "history.html";
+  });
+
+  /* ---------- AI shortcuts (top-left) ---------- */
+  var aiShortcuts = [
+    { name: "Gemini",  url: "https://gemini.google.com", domain: "gemini.google.com" },
+    { name: "ChatGPT", url: "https://chatgpt.com",        domain: "chatgpt.com" },
+    { name: "Claude",  url: "https://claude.ai",          domain: "claude.ai" }
+  ];
+  aiShortcuts.forEach(function (app, idx) {
+    var a = document.createElement("a");
+    a.className = "corner-btn left ai-btn";
+    a.style.top = (20 + idx * 48) + "px";
+    a.href = app.url;
+    a.title = app.name;
+    a.setAttribute("aria-label", app.name);
+
+    var img = document.createElement("img");
+    img.alt = "";
+    img.src = "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(app.domain) + "&sz=64";
+    a.appendChild(img);
+
+    a.addEventListener("click", function () { recordHistory(app.name, app.url); });
+    document.body.appendChild(a);
+  });
+
+  /* ---------- Google apps dropdown ---------- */
+  // Icons are Google's own branding assets (gstatic), not the s2 favicon
+  // proxy — the proxy falls back to a generic "G" for most of these hosts.
+  var GSTATIC_ICON = "https://www.gstatic.com/images/branding/product/1x/";
+  var googleApps = [
+    { name: "Search",    url: "https://www.google.com",               icon: "googleg_48dp.png" },
+    { name: "Gmail",     url: "https://mail.google.com",              icon: "gmail_48dp.png" },
+    { name: "Drive",     url: "https://drive.google.com",             icon: "drive_48dp.png" },
+    { name: "Maps",      url: "https://maps.google.com",               icon: "maps_48dp.png" },
+    { name: "YouTube",   url: "https://www.youtube.com",              icon: "youtube_48dp.png" },
+    { name: "Calendar",  url: "https://calendar.google.com",          icon: "calendar_48dp.png" },
+    { name: "Photos",    url: "https://photos.google.com",            icon: "photos_48dp.png" },
+    { name: "Translate", url: "https://translate.google.com",         icon: "translate_48dp.png" },
+    { name: "Docs",      url: "https://docs.google.com",              icon: "docs_48dp.png" },
+    { name: "Sheets",    url: "https://docs.google.com/spreadsheets", icon: "sheets_48dp.png" },
+    { name: "Slides",    url: "https://docs.google.com/presentation", icon: "slides_48dp.png" },
+    { name: "Meet",      url: "https://meet.google.com",              icon: "meet_48dp.png" }
+  ];
+
+  var googleBtn = $("googleBtn");
+  var googleMenu = $("googleMenu");
+
+  googleApps.forEach(function (app) {
+    var a = document.createElement("a");
+    a.href = app.url;
+
+    var img = document.createElement("img");
+    img.alt = "";
+    img.src = GSTATIC_ICON + app.icon;
+    a.appendChild(img);
+
+    var label = document.createElement("span");
+    label.className = "label";
+    label.textContent = app.name;
+    a.appendChild(label);
+
+    a.addEventListener("click", function () {
+      recordHistory(app.name, app.url);
+      closeGoogleMenu();
+    });
+    googleMenu.appendChild(a);
+  });
+
+  function closeGoogleMenu() {
+    googleMenu.hidden = true;
+    googleBtn.setAttribute("aria-expanded", "false");
+  }
+
+  googleBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    var open = googleMenu.hidden;
+    googleMenu.hidden = !open;
+    googleBtn.setAttribute("aria-expanded", String(open));
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!googleMenu.hidden && !googleMenu.contains(e.target)) closeGoogleMenu();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !googleMenu.hidden) closeGoogleMenu();
+  });
+
+  /* ---------- Search ---------- */
+  var searchInput = $("searchInput");
+  var suggestBox = $("suggestions");
+  var urlLike = /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(:\d+)?(\/\S*)?$/;
+
+  function navigateTo(q) {
+    if (!q) return;
+    if (urlLike.test(q)) {
+      var url = /^https?:\/\//.test(q) ? q : "https://" + q;
+      recordHistory(q, url);
+      location.href = url;
+    } else {
+      location.href = "https://www.google.com/search?q=" + encodeURIComponent(q);
+    }
+  }
+
+  $("searchForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var q = searchInput.value.trim();
+    closeSuggestions();
+    navigateTo(q);
+  });
+
+  // Press "/" anywhere to focus the search field
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "/" && document.activeElement.tagName !== "INPUT") {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  // Safari assigns focus to its own smart-search field when a homepage opens
+  // in a new tab, which wins a same-tick focus() call. Re-assert focus after
+  // the page has finished loading (and again when the tab becomes visible)
+  // so the cursor still lands in the search box.
+  function focusSearch() {
+    if (document.activeElement === document.body || !document.activeElement) {
+      searchInput.focus();
+    }
+  }
+  searchInput.focus();
+  window.addEventListener("pageshow", focusSearch);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") focusSearch();
+  });
+  setTimeout(focusSearch, 50);
+  setTimeout(focusSearch, 300);
+
+  /* ---------- Google suggestions dropdown ---------- */
+  var suggestions = [];
+  var activeIndex = -1;
+  var suggestTimer = null;
+  var suggestSeq = 0;
+
+  function closeSuggestions() {
+    suggestions = [];
+    activeIndex = -1;
+    suggestBox.hidden = true;
+    suggestBox.innerHTML = "";
+    searchInput.setAttribute("aria-expanded", "false");
+  }
+
+  function renderSuggestions() {
+    suggestBox.innerHTML = "";
+    if (suggestions.length === 0) { closeSuggestions(); return; }
+    suggestions.forEach(function (text, idx) {
+      var li = document.createElement("li");
+      li.textContent = text;
+      li.setAttribute("role", "option");
+      li.className = idx === activeIndex ? "active" : "";
+      li.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        chooseSuggestion(text);
+      });
+      suggestBox.appendChild(li);
+    });
+    suggestBox.hidden = false;
+    searchInput.setAttribute("aria-expanded", "true");
+  }
+
+  function chooseSuggestion(text) {
+    searchInput.value = text;
+    closeSuggestions();
+    navigateTo(text);
+  }
+
+  // A plain fetch() to Google's suggest endpoint is blocked by CORS from a
+  // file:// page (the response can't be read). A <script> tag isn't subject
+  // to that restriction, so suggestions are loaded via JSONP instead.
+  function fetchSuggestions(q) {
+    var requestId = ++suggestSeq;
+    var cbName = "__gsuggest_" + requestId;
+    var script = document.createElement("script");
+
+    var timer = setTimeout(cleanup, 4000);
+    function cleanup() {
+      delete window[cbName];
+      clearTimeout(timer);
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[cbName] = function (data) {
+      cleanup();
+      if (requestId !== suggestSeq) return; // a newer keystroke already superseded this
+      suggestions = (data && data[1]) ? data[1].slice(0, 8) : [];
+      activeIndex = -1;
+      renderSuggestions();
+    };
+
+    script.src = "https://suggestqueries.google.com/complete/search?client=chrome&q=" +
+      encodeURIComponent(q) + "&jsonp=" + cbName;
+    script.onerror = cleanup;
+    document.head.appendChild(script);
+  }
+
+  searchInput.addEventListener("input", function () {
+    var q = searchInput.value.trim();
+    clearTimeout(suggestTimer);
+    if (!q) { closeSuggestions(); return; }
+    suggestTimer = setTimeout(function () { fetchSuggestions(q); }, 150);
+  });
+
+  searchInput.addEventListener("keydown", function (e) {
+    if (suggestBox.hidden) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, suggestions.length - 1);
+      renderSuggestions();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, -1);
+      renderSuggestions();
+    } else if (e.key === "Escape") {
+      closeSuggestions();
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      chooseSuggestion(suggestions[activeIndex]);
+    }
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!suggestBox.contains(e.target) && e.target !== searchInput) closeSuggestions();
+  });
+
+  /* ---------- Shortcuts ---------- */
+  var defaultLinks = [
+    { name: "Naver",   url: "https://www.naver.com" },
+    { name: "Google",  url: "https://www.google.com" },
+    { name: "YouTube", url: "https://www.youtube.com" },
+    { name: "Gmail",   url: "https://mail.google.com" },
+    { name: "GitHub",  url: "https://github.com" },
+    { name: "Netflix", url: "https://www.netflix.com" }
+  ];
+  var links = load("hp.links", defaultLinks);
+
+  // Migrate default names saved by the earlier Korean UI
+  var nameMigration = {
+    "네이버": "Naver", "구글": "Google", "유튜브": "YouTube",
+    "지메일": "Gmail", "깃허브": "GitHub", "넷플릭스": "Netflix"
+  };
+  var migrated = false;
+  links.forEach(function (link) {
+    if (nameMigration[link.name]) {
+      link.name = nameMigration[link.name];
+      migrated = true;
+    }
+  });
+  if (migrated) save("hp.links", links);
+
+  var editing = false;
+  var editIndex = null;
+  var dragIndex = null;
+
+  function openAddDialog() {
+    editIndex = null;
+    $("linkDialogTitle").textContent = "Add shortcut";
+    $("linkSubmitBtn").textContent = "Add";
+    $("linkForm").reset();
+    $("linkDialog").showModal();
+  }
+
+  function openEditDialog(idx) {
+    editIndex = idx;
+    $("linkDialogTitle").textContent = "Edit shortcut";
+    $("linkSubmitBtn").textContent = "Save";
+    $("linkName").value = links[idx].name;
+    $("linkUrl").value = links[idx].url;
+    $("linkDialog").showModal();
+  }
+
+  function makeIcon(link) {
+    var host = "";
+    try { host = new URL(link.url).hostname; } catch (e) {}
+
+    var icon = document.createElement("span");
+    icon.className = "icon";
+
+    function showMonogram() {
+      icon.className = "icon mono";
+      icon.innerHTML = "";
+      icon.textContent = link.name.charAt(0).toUpperCase();
+    }
+
+    if (host) {
+      var img = document.createElement("img");
+      img.alt = "";
+      img.width = 28;
+      img.height = 28;
+
+      var faviconUrl = function (h) {
+        return "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(h) + "&sz=64";
+      };
+      // When the proxy has no real favicon for a domain, it silently
+      // substitutes a generic 16x16 globe icon instead of erroring — so a
+      // load failure alone isn't a reliable signal. Real favicons, even
+      // small ones (many sites only ship 32x32), always come back at 32px
+      // or larger, so only treat a sub-32px result as the generic fallback
+      // and retry with the "www." form swapped before giving up on it.
+      var MIN_TRUSTED_SIZE = 32;
+      var altHost = host.indexOf("www.") === 0 ? host.slice(4) : "www." + host;
+      var triedAlt = false;
+      function tryAlt() {
+        if (triedAlt) { showMonogram(); return; }
+        triedAlt = true;
+        img.src = faviconUrl(altHost);
+      }
+      img.addEventListener("error", tryAlt);
+      img.addEventListener("load", function () {
+        if (img.naturalWidth < MIN_TRUSTED_SIZE) tryAlt();
+      });
+
+      img.src = faviconUrl(host);
+      icon.appendChild(img);
+    } else {
+      showMonogram();
+    }
+    return icon;
+  }
+
+  function renderLinks() {
+    var box = $("links");
+    box.innerHTML = "";
+    box.classList.toggle("editing", editing);
+
+    links.forEach(function (link, idx) {
+      var a = document.createElement("a");
+      a.className = "tile";
+      a.href = link.url;
+      a.draggable = editing;
+
+      a.appendChild(makeIcon(link));
+
+      var name = document.createElement("span");
+      name.className = "name";
+      name.textContent = link.name;
+      a.appendChild(name);
+
+      var del = document.createElement("button");
+      del.className = "del";
+      del.type = "button";
+      del.textContent = "×";
+      del.setAttribute("aria-label", "Delete " + link.name);
+      del.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        links.splice(idx, 1);
+        save("hp.links", links);
+        renderLinks();
+      });
+      a.appendChild(del);
+
+      a.addEventListener("click", function (e) {
+        if (editing) { e.preventDefault(); openEditDialog(idx); return; }
+        recordHistory(link.name, link.url);
+      });
+
+      if (editing) {
+        a.addEventListener("dragstart", function (e) {
+          dragIndex = idx;
+          a.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", String(idx));
+        });
+        a.addEventListener("dragend", function () {
+          a.classList.remove("dragging");
+          box.querySelectorAll(".drag-over").forEach(function (t) {
+            t.classList.remove("drag-over");
+          });
+          dragIndex = null;
+        });
+        a.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          a.classList.add("drag-over");
+        });
+        a.addEventListener("dragleave", function () {
+          a.classList.remove("drag-over");
+        });
+        a.addEventListener("drop", function (e) {
+          e.preventDefault();
+          a.classList.remove("drag-over");
+          if (dragIndex === null || dragIndex === idx) return;
+          var moved = links.splice(dragIndex, 1)[0];
+          links.splice(idx, 0, moved);
+          save("hp.links", links);
+          renderLinks();
+        });
+      }
+
+      box.appendChild(a);
+    });
+
+    var add = document.createElement("button");
+    add.className = "tile add-tile";
+    add.type = "button";
+    add.textContent = "+";
+    add.setAttribute("aria-label", "Add shortcut");
+    add.addEventListener("click", function () { openAddDialog(); });
+    if (editing) {
+      add.addEventListener("dragover", function (e) { e.preventDefault(); });
+      add.addEventListener("drop", function (e) {
+        e.preventDefault();
+        if (dragIndex === null) return;
+        var moved = links.splice(dragIndex, 1)[0];
+        links.push(moved);
+        save("hp.links", links);
+        renderLinks();
+      });
+    }
+    box.appendChild(add);
+  }
+  renderLinks();
+
+  $("editBtn").addEventListener("click", function () {
+    editing = !editing;
+    this.textContent = editing ? "Done" : "Edit";
+    renderLinks();
+  });
+
+  $("linkForm").addEventListener("submit", function () {
+    var name = $("linkName").value.trim();
+    var url = $("linkUrl").value.trim();
+    if (!name || !url) return;
+    if (!/^https?:\/\//.test(url)) url = "https://" + url;
+    if (editIndex === null) {
+      links.push({ name: name, url: url });
+    } else {
+      links[editIndex] = { name: name, url: url };
+    }
+    save("hp.links", links);
+    this.reset();
+    renderLinks();
+  });
+  $("linkCancel").addEventListener("click", function () {
+    $("linkForm").reset();
+    $("linkDialog").close();
+  });
+
+  /* ---------- To-dos ---------- */
+  var todos = load("hp.todos", []);
+
+  function renderTodos() {
+    var ul = $("todoList");
+    ul.innerHTML = "";
+
+    if (todos.length === 0) {
+      var empty = document.createElement("li");
+      empty.className = "todo-empty";
+      empty.textContent = "Nothing here yet — add a task above";
+      ul.appendChild(empty);
+      return;
+    }
+
+    todos.forEach(function (todo, idx) {
+      var li = document.createElement("li");
+      if (todo.done) li.className = "done";
+
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = todo.done;
+      cb.setAttribute("aria-label", "Mark " + todo.text + " as done");
+      cb.addEventListener("change", function () {
+        todo.done = cb.checked;
+        save("hp.todos", todos);
+        renderTodos();
+      });
+
+      var txt = document.createElement("span");
+      txt.className = "txt";
+      txt.textContent = todo.text;
+
+      var rm = document.createElement("button");
+      rm.className = "rm";
+      rm.type = "button";
+      rm.textContent = "×";
+      rm.setAttribute("aria-label", "Delete " + todo.text);
+      rm.addEventListener("click", function () {
+        todos.splice(idx, 1);
+        save("hp.todos", todos);
+        renderTodos();
+      });
+
+      li.appendChild(cb);
+      li.appendChild(txt);
+      li.appendChild(rm);
+      ul.appendChild(li);
+    });
+  }
+  renderTodos();
+
+  $("todoForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var text = $("todoInput").value.trim();
+    if (!text) return;
+    todos.push({ text: text, done: false });
+    save("hp.todos", todos);
+    $("todoInput").value = "";
+    renderTodos();
+  });
+
+  $("clearDoneBtn").addEventListener("click", function () {
+    todos = todos.filter(function (t) { return !t.done; });
+    save("hp.todos", todos);
+    renderTodos();
+  });
+})();
+</script>
+</body>
+</html>
