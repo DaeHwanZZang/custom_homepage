@@ -1253,6 +1253,7 @@
       .then(function (json) {
         var file = json.files && json.files[GIST_FILENAME];
         if (!file) throw new Error("sync file not found in gist");
+        save("hp.sync.gistId", gistId);
         applySyncData(JSON.parse(file.content));
         if (!silent) setSyncStatus("Pulled just now.");
       })
