@@ -55,6 +55,18 @@ Safari 브라우저의 **홈페이지(시작 페이지)로 지정할 수 있는 
   (일반 검색어 입력 후 Google 검색으로 이동하는 것은 "사이트 방문"이 아니므로 기록하지 않음 — 프라이버시 고려)
 - `localStorage`의 `hp.history`에 최대 50건 저장, 페이지 내 "Clear history" 버튼으로 전체 삭제 가능
 
+### 기기 간 동기화 (Sync) — 온라인 배포(GitHub Pages 등) 이후 명시적 요청으로 추가됨
+- `localStorage`는 origin(프로토콜+도메인) 단위로 분리되어 `file://`와 배포된 `https://` 사이,
+  그리고 서로 다른 노트북 사이에는 애초에 동기화되지 않는다는 제약이 있어 추가됨
+- 우측 상단 "Sync" 버튼(구름 아이콘) → 다이얼로그에서 GitHub Personal Access Token(범위: `gist`만)과
+  Gist ID를 입력해 사용. 토큰/Gist ID는 `localStorage`(`hp.sync.token`, `hp.sync.gistId`)에 저장
+- "Push"는 현재 기기의 `hp.links` / `hp.todos` / `hp.theme`를 비공개 GitHub Gist(파일명
+  `homepage-sync.json`)에 저장(최초엔 Gist 생성 후 ID 자동 저장), "Pull"은 반대로 Gist → 로컬 반영
+- 페이지 로드 시 토큰/Gist ID가 이미 있으면 자동으로 조용히 1회 pull 시도 (실패 시 무시, UI에 에러 노출 안 함)
+- 방문 기록(`hp.history`)은 동기화 대상에서 **제외** — 히스토리 기능 자체의 프라이버시 방침과 일관성 유지
+- 외부 의존성 최소화 원칙의 또 다른 예외: GitHub REST API(`api.github.com`)를 직접 호출.
+  CORS 미지원/토큰 만료 등으로 실패해도 조용히 실패 상태만 표시하고 나머지 기능에는 영향 없음
+
 ## Safari 홈페이지 설정 방법 (참고)
 
 Safari > 설정(Settings) > 일반(General) > 홈페이지(Homepage)에 `file:///경로/index.html` 지정,

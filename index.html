@@ -103,6 +103,24 @@
   .theme-btn { top: 20px; }
   .history-btn { top: 68px; }
   .google-btn { top: 116px; }
+  .sync-btn { top: 164px; }
+  .sync-btn.syncing { animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .sync-status {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin: -6px 0 14px;
+    min-height: 1.1em;
+  }
+  .sync-status.error { color: #c0392b; }
+  dialog p.hint {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin: -8px 0 16px;
+    line-height: 1.4;
+  }
+  dialog p.hint a { color: var(--accent); }
 
   .ai-btn img {
     width: 20px;
@@ -114,7 +132,7 @@
   /* ---------- Google apps dropdown ---------- */
   .google-menu {
     position: fixed;
-    top: 162px;
+    top: 210px;
     right: 20px;
     width: 264px;
     background: var(--surface);
@@ -479,6 +497,12 @@
     </svg>
   </button>
   <nav class="google-menu" id="googleMenu" aria-label="Google services" hidden></nav>
+  <button class="corner-btn sync-btn" id="syncBtn" title="Sync across devices" aria-label="Sync across devices">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 12a9 9 0 0 1-15.3 6.5L3 16"/><path d="M3 21v-5h5"/>
+      <path d="M3 12a9 9 0 0 1 15.3-6.5L21 8"/><path d="M21 3v5h-5"/>
+    </svg>
+  </button>
 
   <div class="wrap">
     <header>
@@ -530,6 +554,29 @@
       <div class="dialog-btns">
         <button type="button" id="linkCancel">Cancel</button>
         <button type="submit" class="primary" id="linkSubmitBtn" value="ok">Add</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="syncDialog">
+    <h3>Sync across devices</h3>
+    <p class="hint">
+      Uses a private <a href="https://gist.github.com" target="_blank" rel="noopener">GitHub Gist</a>
+      to store shortcuts, to-dos and theme. Create a token at
+      <a href="https://github.com/settings/tokens/new?scopes=gist&description=Homepage%20sync" target="_blank" rel="noopener">github.com/settings/tokens</a>
+      with only the <strong>gist</strong> scope checked, then paste it below.
+      The token stays in this browser's local storage only.
+    </p>
+    <form id="syncForm">
+      <label for="syncToken">GitHub token</label>
+      <input type="password" id="syncToken" placeholder="ghp_..." autocomplete="off">
+      <label for="syncGistId">Gist ID (leave empty the first time)</label>
+      <input type="text" id="syncGistId" placeholder="auto-filled after first sync" autocomplete="off">
+      <p class="sync-status" id="syncStatus"></p>
+      <div class="dialog-btns">
+        <button type="button" id="syncCancel">Close</button>
+        <button type="button" id="syncPullBtn">Pull</button>
+        <button type="submit" class="primary" id="syncPushBtn">Push</button>
       </div>
     </form>
   </dialog>
@@ -1117,6 +1164,119 @@
     save("hp.todos", todos);
     renderTodos();
   });
+
+  /* ---------- Cross-device sync (GitHub Gist) ---------- */
+  var GIST_FILENAME = "homepage-sync.json";
+  var syncBtn = $("syncBtn");
+  var syncStatus = $("syncStatus");
+
+  function setSyncStatus(text, isError) {
+    syncStatus.textContent = text;
+    syncStatus.classList.toggle("error", !!isError);
+  }
+
+  function gistHeaders(token) {
+    return {
+      "Authorization": "token " + token,
+      "Accept": "application/vnd.github+json",
+      "Content-Type": "application/json"
+    };
+  }
+
+  function collectSyncData() {
+    return { links: links, todos: todos, theme: theme, updatedAt: Date.now() };
+  }
+
+  function applySyncData(data) {
+    if (data.links) { links = data.links; save("hp.links", links); }
+    if (data.todos) { todos = data.todos; save("hp.todos", todos); }
+    if ("theme" in data) { theme = data.theme; save("hp.theme", theme); applyTheme(); }
+    renderLinks();
+    renderTodos();
+  }
+
+  function pushToGist(token, gistId) {
+    var body = {
+      description: "Custom homepage sync data",
+      public: false,
+      files: {}
+    };
+    body.files[GIST_FILENAME] = { content: JSON.stringify(collectSyncData(), null, 2) };
+
+    var url = gistId ? "https://api.github.com/gists/" + gistId : "https://api.github.com/gists";
+    var method = gistId ? "PATCH" : "POST";
+
+    syncBtn.classList.add("syncing");
+    setSyncStatus("Pushing…");
+    return fetch(url, { method: method, headers: gistHeaders(token), body: JSON.stringify(body) })
+      .then(function (res) {
+        if (!res.ok) throw new Error("GitHub API error " + res.status);
+        return res.json();
+      })
+      .then(function (json) {
+        save("hp.sync.gistId", json.id);
+        $("syncGistId").value = json.id;
+        setSyncStatus("Pushed just now.");
+      })
+      .catch(function (err) {
+        setSyncStatus("Push failed: " + err.message, true);
+      })
+      .then(function () { syncBtn.classList.remove("syncing"); });
+  }
+
+  function pullFromGist(token, gistId, silent) {
+    if (!gistId) {
+      if (!silent) setSyncStatus("No gist ID yet — push once first.", true);
+      return Promise.resolve();
+    }
+    syncBtn.classList.add("syncing");
+    if (!silent) setSyncStatus("Pulling…");
+    return fetch("https://api.github.com/gists/" + gistId, { headers: gistHeaders(token) })
+      .then(function (res) {
+        if (!res.ok) throw new Error("GitHub API error " + res.status);
+        return res.json();
+      })
+      .then(function (json) {
+        var file = json.files && json.files[GIST_FILENAME];
+        if (!file) throw new Error("sync file not found in gist");
+        applySyncData(JSON.parse(file.content));
+        if (!silent) setSyncStatus("Pulled just now.");
+      })
+      .catch(function (err) {
+        if (!silent) setSyncStatus("Pull failed: " + err.message, true);
+      })
+      .then(function () { syncBtn.classList.remove("syncing"); });
+  }
+
+  syncBtn.addEventListener("click", function () {
+    $("syncToken").value = load("hp.sync.token", "");
+    $("syncGistId").value = load("hp.sync.gistId", "");
+    setSyncStatus("");
+    $("syncDialog").showModal();
+  });
+  $("syncCancel").addEventListener("click", function () { $("syncDialog").close(); });
+
+  $("syncForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var token = $("syncToken").value.trim();
+    if (!token) { setSyncStatus("Enter a token first.", true); return; }
+    save("hp.sync.token", token);
+    pushToGist(token, $("syncGistId").value.trim());
+  });
+  $("syncPullBtn").addEventListener("click", function () {
+    var token = $("syncToken").value.trim();
+    if (!token) { setSyncStatus("Enter a token first.", true); return; }
+    save("hp.sync.token", token);
+    pullFromGist(token, $("syncGistId").value.trim());
+  });
+
+  // Best-effort silent pull on load, so a second device picks up the
+  // latest data automatically without needing the dialog opened first.
+  (function autoPull() {
+    var token = load("hp.sync.token", "");
+    var gistId = load("hp.sync.gistId", "");
+    if (token && gistId) pullFromGist(token, gistId, true);
+  })();
 })();
 </script>
 </body>
