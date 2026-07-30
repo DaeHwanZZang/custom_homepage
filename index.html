@@ -593,8 +593,20 @@
       return raw === null ? fallback : JSON.parse(raw);
     } catch (e) { return fallback; }
   }
+  var SYNCED_KEYS = ["hp.links", "hp.todos", "hp.theme"];
+  var suppressAutoPush = false;
+  var autoPushTimer = null;
+  function scheduleAutoPush() {
+    if (suppressAutoPush) return;
+    var token = load("hp.sync.token", "");
+    var gistId = load("hp.sync.gistId", "");
+    if (!token || !gistId) return;
+    clearTimeout(autoPushTimer);
+    autoPushTimer = setTimeout(function () { pushToGist(token, gistId); }, 2000);
+  }
   function save(key, value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+    if (SYNCED_KEYS.indexOf(key) !== -1) scheduleAutoPush();
   }
 
   /* ---------- Theme ---------- */
@@ -1188,9 +1200,11 @@
   }
 
   function applySyncData(data) {
+    suppressAutoPush = true;
     if (data.links) { links = data.links; save("hp.links", links); }
     if (data.todos) { todos = data.todos; save("hp.todos", todos); }
     if ("theme" in data) { theme = data.theme; save("hp.theme", theme); applyTheme(); }
+    suppressAutoPush = false;
     renderLinks();
     renderTodos();
   }

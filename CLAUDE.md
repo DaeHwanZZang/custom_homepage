@@ -62,6 +62,9 @@ Safari 브라우저의 **홈페이지(시작 페이지)로 지정할 수 있는 
   Gist ID를 입력해 사용. 토큰/Gist ID는 `localStorage`(`hp.sync.token`, `hp.sync.gistId`)에 저장
 - "Push"는 현재 기기의 `hp.links` / `hp.todos` / `hp.theme`를 비공개 GitHub Gist(파일명
   `homepage-sync.json`)에 저장(최초엔 Gist 생성 후 ID 자동 저장), "Pull"은 반대로 Gist → 로컬 반영
+- 토큰/Gist ID가 설정된 상태에서는 `hp.links` / `hp.todos` / `hp.theme` 변경 시 2초 디바운스 후
+  **자동 Push**됨 (다이얼로그를 열지 않아도 동작) — 사용자가 "할일 추가할 때마다 수동 동기화해야 하냐"고
+  물어본 뒤 명시적으로 요청하여 추가됨. Pull로 데이터를 받아올 때는 다시 Push하지 않도록 억제 플래그 사용
 - 페이지 로드 시 토큰/Gist ID가 이미 있으면 자동으로 조용히 1회 pull 시도 (실패 시 무시, UI에 에러 노출 안 함)
 - 방문 기록(`hp.history`)은 동기화 대상에서 **제외** — 히스토리 기능 자체의 프라이버시 방침과 일관성 유지
 - 외부 의존성 최소화 원칙의 또 다른 예외: GitHub REST API(`api.github.com`)를 직접 호출.
