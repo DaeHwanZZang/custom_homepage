@@ -6,7 +6,7 @@
 
 Anthropic Claude 스타일을 따랐습니다: 아이보리/차콜 배경, 코랄 포인트 컬러, 세리프 디스플레이 글꼴.
 
-![screenshot placeholder](#)
+<img width="1710" height="944" alt="image" src="https://github.com/user-attachments/assets/7fb3bbc1-50fa-4f48-b6c2-8cdb42ac73bf" />
 
 ## 기능
 
