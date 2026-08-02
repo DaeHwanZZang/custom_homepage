@@ -6,7 +6,8 @@ A single-file, offline-first homepage for your browser — no server, no build s
 
 Styled after Anthropic's Claude look: ivory/charcoal backgrounds, a coral accent, and a serif display face.
 
-![screenshot placeholder](#)
+<img width="1710" height="944" alt="image" src="https://github.com/user-attachments/assets/c4b95ff0-392c-4bdc-8bcc-8e64cd427b97" />
+
 
 ## Features
 
