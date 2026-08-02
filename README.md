@@ -1,5 +1,7 @@
 # Custom Homepage
 
+**English** · [한국어](README.ko.md)
+
 A single-file, offline-first homepage for your browser — no server, no build step, no dependencies. Open `index.html` locally and set it as your Safari (or Chrome) new-tab/homepage page.
 
 Styled after Anthropic's Claude look: ivory/charcoal backgrounds, a coral accent, and a serif display face.
