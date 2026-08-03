@@ -51,8 +51,28 @@ Everything you customize (shortcuts, to-dos, theme, history) is saved in your br
    - Set **"New windows open with"** (and/or **"New tabs open with"**) to **Homepage**.
 
    ### Chrome
-   - Chrome menu → **Settings** → **On startup** → **Open a specific page** → add the same `file:///...` path.
-   - For the **new-tab page** specifically, Chrome doesn't allow a local file to replace it directly — you'd need an extension (e.g. "New Tab Redirect") pointed at the same `file://` path.
+   Chrome has three separate "start page" concepts, and each needs its own setting:
+
+   **A. Home button page** (the page the 🏠 home icon takes you to)
+   1. Go to `chrome://settings/appearance` (or **⋮ menu → Settings → Appearance**).
+   2. Turn on **Show home button**.
+   3. Choose **Enter custom web address**, and paste the full `file:///...` path from step 2 above.
+   4. If the home button isn't visible in your toolbar, it's this same toggle — turning it on makes the icon appear next to the address bar.
+
+   **B. Startup page(s)** (what opens when Chrome launches)
+   1. Go to `chrome://settings/onStartup` (or **⋮ menu → Settings → On startup**).
+   2. Select **Open a specific page or set of pages**.
+   3. Click **Add a new page**, paste the same `file:///...` path, and click **Add**.
+
+   **C. New-tab page** (what shows when you open a new tab / press ⌘T)
+   Chrome does not let a local file replace the built-in New Tab page directly — this always needs a small extension:
+   1. Install **[New Tab Redirect](https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna)** from the Chrome Web Store.
+   2. Go to `chrome://extensions`, find **New Tab Redirect**, click **Details**, and enable **Allow access to file URLs** (required — without this the extension can't open a `file://` page).
+   3. Click the extension's **Options** (or right-click its toolbar icon → **Options**).
+   4. Under **Redirect URL**, paste the same `file:///...` path, then save.
+   5. Open a new tab to confirm it loads the homepage.
+
+   You don't need to set up all three — pick whichever entry points you actually use (most people just want B and/or C).
 
 4. Open a new window/tab and you should see your new homepage. Click the **+** tile to start adding your own shortcuts.
 
