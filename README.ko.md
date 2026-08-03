@@ -67,11 +67,18 @@ Anthropic Claude 스타일을 따랐습니다: 아이보리/차콜 배경, 코�
    Chrome은 기본 새 탭 페이지를 로컬 파일로 직접 바꾸는 것을 허용하지 않으므로, 항상 작은 확장 프로그램이 필요합니다.
    1. Chrome 웹 스토어에서 **[New Tab Redirect](https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna)** 를 설치합니다.
    2. `chrome://extensions` 로 이동해 **New Tab Redirect**를 찾고 **세부정보**를 클릭한 뒤 **파일 URL에 대한 액세스 허용**을 켭니다 (필수 — 이걸 켜지 않으면 확장 프로그램이 `file://` 페이지를 열 수 없습니다).
+
    
    <img width="977" height="1329" alt="image" src="https://github.com/user-attachments/assets/1438a82b-f568-40ad-a7f8-655cb765fbf1" />
 
+
    3. 확장 프로그램의 **옵션**을 엽니다 (또는 툴바 아이콘 우클릭 → **옵션**).
    4. **Redirect URL** 항목에 같은 `file:///...` 경로를 붙여넣고 저장합니다.
+
+
+<img width="2522" height="1440" alt="image" src="https://github.com/user-attachments/assets/32d2dba7-b3ab-47c5-b9e6-b8d0549182c0" />
+
+   
    5. 새 탭을 열어 홈페이지가 뜨는지 확인합니다.
 
    세 가지를 모두 설정할 필요는 없습니다 — 실제로 쓰는 진입 지점만 골라서 설정하면 됩니다 (대부분은 B와 C만 있으면 충분합니다).
